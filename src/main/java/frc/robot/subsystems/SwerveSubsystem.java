@@ -32,6 +32,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -64,6 +65,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * Swerve drive object.
    */
   private final SwerveDrive swerveDrive;
+  private final Vision vision = new Vision();
   /**
    * Enable vision odometry updates while driving.
    */
@@ -74,6 +76,7 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @param directory Directory of swerve drive config files.
    */
+  public DigitalInput limitswitch = new DigitalInput(1);
 
   public final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(
     AprilTagFields.k2026RebuiltWelded
@@ -90,6 +93,7 @@ public class SwerveSubsystem extends SubsystemBase {
     .publish();
 
   public SwerveSubsystem(File directory) {
+
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
     Pose2d startingPose = (this.isRedAlliance())
       ? new Pose2d(
@@ -101,7 +105,7 @@ public class SwerveSubsystem extends SubsystemBase {
         Rotation2d.fromDegrees(180)
       );
 
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try {
       swerveDrive =
         new SwerveParser(directory)
@@ -128,6 +132,7 @@ public class SwerveSubsystem extends SubsystemBase {
     //swerveDrive.swerveController.yLimiter.reset(0);
     //swerveDrive.swerveController.
     //swerveDrive.swerveController.addSlewRateLimiters(null, null, null);
+    vision.setSwerveDrive(this.swerveDrive);
   }
 
   /**
@@ -139,8 +144,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    vision.addVisionMeasurement();
     // When vision is enabled we must manually update odometry in SwerveDrive
     publisher.set(getPose());
+    //System.out.println("Limit Switch: "  + this.limitswitch.get());
     /*
     if (Cameras.LEFT_CAM.getEstimateTagPose() != null) {
       System.out.println(Cameras.LEFT_CAM.getEstimateTagPose().getRotation().getZ() * 180 / Math.PI);

@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Drive;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Vision;
 
 import java.io.File;
 
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+// Metal Mountain 7538 is better than you guys
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -25,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-
+  //private final Vision visionSubsystem = new Vision();
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -52,8 +54,8 @@ public class RobotContainer {
       m_driverController::getLeftY,
       m_driverController::getRightX,
       () -> m_driverController.leftStick().getAsBoolean() || m_driverController.rightStick().getAsBoolean(),
-      m_driverController.leftTrigger(.5)::getAsBoolean)
-    );
+      m_driverController.leftTrigger(.5)::getAsBoolean));
+
   }
 
   /**
