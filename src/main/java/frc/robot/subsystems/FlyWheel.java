@@ -6,11 +6,14 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFXS;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 
 import frc.robot.Constants.FlyWheelConstants;
 import frc.util.NetworkTables;
@@ -22,7 +25,6 @@ public class FlyWheel extends SubsystemBase {
   private TalonFXSConfiguration talonFXSConfigs;
   private Slot0Configs slot0Configs;
   private MotionMagicConfigs motionMagicConfigs;
-  private final MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(0);
 
   public FlyWheel() {
     ConfigureMotor();
@@ -38,6 +40,7 @@ public class FlyWheel extends SubsystemBase {
     slot0Configs.kP = NetworkTables.FlyTable.kP.get(); // An error of 1 rps results in 0.11 V output
     slot0Configs.kI = NetworkTables.FlyTable.kI.get(); // no output for integrated error
     slot0Configs.kD = NetworkTables.FlyTable.kD.get(); // no output for error derivative
+    talonFXSConfigs.Commutation.MotorArrangement = MotorArrangementValue.NEO_JST;
     // set Motion Magic settings
     motionMagicConfigs = talonFXSConfigs.MotionMagic;
     motionMagicConfigs.MotionMagicAcceleration = NetworkTables.FlyTable.MotionMagicAcceleration.get(); // Target acceleration of 400 rps/s (0.25 seconds to max)
@@ -46,12 +49,15 @@ public class FlyWheel extends SubsystemBase {
   }
 
   public void setFlyWheelVelocity(double shooterMotorPower) {
+    final MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(0);
     //leftShooterMotor.setControl(m_request.withVelocity(shooterMotorPower));
-    flyMotor.setControl(m_request.withVelocity(shooterMotorPower));
+    System.out.println(m_request.withVelocity(shooterMotorPower) + "\n");
+    flyMotor.setControl(m_request.withVelocity(shooterMotorPower));    
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    NetworkTables.FlyTable.velocity.set(flyMotor.getVelocity().getValueAsDouble());
   }
 }

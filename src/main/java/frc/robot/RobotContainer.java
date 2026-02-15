@@ -58,7 +58,7 @@ public class RobotContainer {
     );
 
     m_driverController.a().onTrue(Commands.runOnce(() -> {flyWheel.ConfigureMotor();}, flyWheel));
-    m_driverController.y().whileTrue(Commands.run(() -> {flyWheel.setFlyWheelVelocity(0.001);}, flyWheel));
+    m_driverController.y().whileTrue(Commands.run(() -> {flyWheel.setFlyWheelVelocity(80);}, flyWheel));
     m_driverController.b().whileTrue(Commands.run(() -> {flyWheel.setFlyWheelVelocity(0);}, flyWheel));
   }
 
